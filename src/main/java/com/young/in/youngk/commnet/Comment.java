@@ -1,4 +1,4 @@
-package com.young.in.youngk.board;
+package com.young.in.youngk.commnet;
 
 import lombok.Data;
 import org.bson.types.ObjectId;

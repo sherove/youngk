@@ -1,5 +1,5 @@
 
-package com.young.in.youngk.board;
+package com.young.in.youngk.commnet;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
