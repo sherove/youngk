@@ -4,14 +4,14 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "user")
+@Document(collection = "app_users")
 @Data
-public class User {
+public class AppUsers {
 
     @Id
     private String id;
 
-    private String userPublicId;
+    private String appUserId;
     private String password;
     private String name;
     private String birth;

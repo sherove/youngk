@@ -3,8 +3,8 @@ package com.young.in.youngk.board;
 
 import com.young.in.youngk.commnet.Comment;
 import com.young.in.youngk.commnet.CommentRepository;
-import com.young.in.youngk.user.User;
-import com.young.in.youngk.user.UserRepository;
+import com.young.in.youngk.user.AppUsers;
+import com.young.in.youngk.user.AppUsersRepository;
 import lombok.AllArgsConstructor;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
@@ -22,7 +22,7 @@ public class BoardService{
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
-    private final UserRepository userRepository;
+    private final AppUsersRepository appUsersRepository;
 
     public Optional<Board> getPostWithComments(String postId) {
         try {
@@ -34,8 +34,8 @@ public class BoardService{
                 System.out.println("Comments found: " + comments.size());
                 post.get().setComments(comments);
 
-                User user = userRepository.findById(post.get().getUserId());
-                post.get().setUser(user);
+                AppUsers appUsers = appUsersRepository.findById(post.get().getUserId());
+                post.get().setAppUsers(appUsers);
             }
             return post;
         } catch (IllegalArgumentException e) {
