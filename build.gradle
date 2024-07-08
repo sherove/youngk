@@ -39,6 +39,9 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-annotations:2.15.0'
 	implementation 'com.fasterxml.jackson.core:jackson-core:2.15.0'
 
+	//텔레그램봇
+	implementation 'org.telegram:telegrambots-spring-boot-starter:6.8.0' // 최신 버전 확인 필요
+
 
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
