@@ -2,15 +2,12 @@ package com.young.in.youngk.message.google.service;
 
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.Calendar;
-import com.google.api.services.calendar.model.Channel;
 import com.google.api.services.calendar.model.Event;
 import com.google.api.services.calendar.model.Events;
-import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 @Service
@@ -18,6 +15,9 @@ public class GoogleCalendarService {
 
     @Autowired
     private Calendar calendarService;
+
+
+
 
     public List<Event> getEvents() throws IOException {
         // 현재 시간 설정

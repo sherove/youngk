@@ -13,10 +13,8 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class TelegramBotConfig {
@@ -79,8 +77,9 @@ public class TelegramBotConfig {
 
         public void sendNotification(String chatId, String message) {
             System.out.println("[Bot]Sending message to chatId: " + chatId + " with message: " + message); // 로그 추가
-            String urlString = String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", botToken, chatId, message);
             try {
+                String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8.toString());
+                String urlString = String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", botToken, chatId, encodedMessage);
                 URL url = new URL(urlString);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");

@@ -3,14 +3,17 @@ package com.young.in.youngk.message.google.schduler;
 import com.google.api.client.util.DateTime;
 import com.google.api.services.calendar.model.Event;
 import com.young.in.youngk.message.google.service.GoogleCalendarService;
+import com.young.in.youngk.message.telegram.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -18,6 +21,9 @@ public class ScheduledTask {
 
     @Autowired
     private GoogleCalendarService googleCalendarService;
+
+    @Autowired
+    private NotificationService notificationService;
 
     public static String convertDateTime(DateTime googleDateTime) {
         if (googleDateTime == null) return "";
@@ -35,23 +41,24 @@ public class ScheduledTask {
     @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void checkForUpdates() throws IOException {
         List<Event> events = googleCalendarService.getEvents();
-
-        // 날짜-시간-요일 형식의 포맷터
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm EEEE");
+        Instant now = Instant.now();
+        Instant oneMinuteAgo = now.minusSeconds(60);
 
         for (Event event : events) {
-
-            DateTime startDateTime = event.getStart().getDateTime();
-            DateTime endDateTime = event.getEnd().getDateTime();
-
-
-            String formattedDate1 = convertDateTime(startDateTime);
-            String formattedDate2 = convertDateTime(endDateTime);
-
-            System.out.println("Event: " + event.getSummary() +
-                    " Start: " + formattedDate1 +
-                    " End: " + formattedDate2
-            );
+            DateTime createdDateTime = event.getCreated();
+            if (createdDateTime != null) {
+                Instant eventCreatedTime = Instant.ofEpochMilli(createdDateTime.getValue());
+                if (eventCreatedTime.isAfter(oneMinuteAgo) && eventCreatedTime.isBefore(now)) {
+                    String startDate = convertDateTime(event.getStart().getDateTime());
+                    String endDate = convertDateTime(event.getEnd().getDateTime());
+                    List<String> chatIdList = Arrays.asList("1492434707,2140097561".split(","));
+                    String message = "[Google 일정]" +  event.getSummary()
+                             + "\n 시작일 : " + startDate
+                             + "\n 종료일 : " + endDate ;
+                    notificationService.sendNotification(chatIdList, message);
+                    System.out.println("New Event: " + message);
+                }
+            }
         }
     }
 
