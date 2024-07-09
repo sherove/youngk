@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,7 +56,8 @@ public class LoginController {
 
     private String getAccessToken(String code) throws Exception {
         RestTemplate restTemplate = new RestTemplate();
-        restTemplate.setMessageConverters(Arrays.asList(new FormHttpMessageConverter(), new StringHttpMessageConverter()));
+        restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        restTemplate.getMessageConverters().add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
@@ -69,11 +71,8 @@ public class LoginController {
         HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<String> response = restTemplate.exchange(tokenUri, HttpMethod.POST, request, String.class);
 
-        if (response.getStatusCode().is2xxSuccessful()) {
-            return extractAccessToken(response.getBody());
-        } else {
-            throw new Exception("Failed to get access token: " + response.getStatusCode());
-        }
+        // JSON 파싱하여 access_token 추출 (간단한 예시, 실제로는 JSON 파싱 필요)
+        return extractAccessToken(response.getBody());
     }
 
     private String getUserInfo(String accessToken) {

@@ -1,10 +1,9 @@
 package com.young.in.youngk.board;
 
+import com.young.in.youngk.board.entity.Board;
+import com.young.in.youngk.board.request.entity.BoardRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -18,6 +17,12 @@ public class BoardController {
     @GetMapping("/{id}")
     public Optional<Board> getPostWithComments(@PathVariable String id) {
         return boardService.getPostWithComments(id);
+    }
+
+    @PostMapping("")
+    public Board saveBoard(@RequestBody BoardRequest request) {
+        return boardService.save(request);
+
     }
 
 }

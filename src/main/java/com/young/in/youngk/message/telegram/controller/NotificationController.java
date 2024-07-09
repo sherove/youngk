@@ -1,6 +1,6 @@
-package com.young.in.youngk.telegram.controller;
+package com.young.in.youngk.message.telegram.controller;
 
-import com.young.in.youngk.telegram.service.NotificationService;
+import com.young.in.youngk.message.telegram.service.NotificationService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;

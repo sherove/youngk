@@ -78,7 +78,7 @@ public class TelegramBotConfig {
 
 
         public void sendNotification(String chatId, String message) {
-            System.out.println("Sending message to chatId: " + chatId + " with message: " + message); // 로그 추가
+            System.out.println("[Bot]Sending message to chatId: " + chatId + " with message: " + message); // 로그 추가
             String urlString = String.format("https://api.telegram.org/bot%s/sendMessage?chat_id=%s&text=%s", botToken, chatId, message);
             try {
                 URL url = new URL(urlString);

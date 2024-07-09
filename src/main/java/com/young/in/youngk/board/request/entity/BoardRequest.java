@@ -1,5 +1,6 @@
-package com.young.in.youngk.board;
+package com.young.in.youngk.board.request.entity;
 
+import com.young.in.youngk.board.entity.Board;
 import com.young.in.youngk.commnet.Comment;
 import com.young.in.youngk.user.AppUsers;
 import lombok.Data;
@@ -10,25 +11,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 
-@Document(collection = "board")
 @Data
-public class Board {
-    @Id
+public class BoardRequest {
     private String id;
     private String title;
     private String content;
     private Date createdAt;
     private ObjectId userId;
     private AppUsers appUsers;
-    private List<Comment> comments;  // 댓글 리스트 필드 추가
 
-    // Getter and Setter for comments
-    public List<Comment> getComments() {
-        return comments;
-    }
 
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    static public Board toSave(BoardRequest request) {
+        return Board.builder()
+                .appUsers(request.getAppUsers())
+                .userId(request.getUserId())
+                .title(request.getTitle())
+                .content(request.getContent())
+                .build();
     }
 
 }

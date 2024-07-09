@@ -1,17 +1,24 @@
 package com.young.in.youngk.login;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.http.converter.FormHttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.ui.Model;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,13 +57,19 @@ public class KakaoLoginController {
             // JSON 파싱 후 사용자 정보를 이용하여 회원가입 또는 로그인 처리
             // 예시: JSON 파싱
             Map<String, Object> userMap = parseUserInfo(userInfo);
-            String userId = (String) userMap.get("id");
-            String userName = (String) ((Map<String, Object>) userMap.get("properties")).get("nickname");
 
-            model.addAttribute("userId", userId);
-            model.addAttribute("userName", userName);
-            model.addAttribute("userId", userId);
-            model.addAttribute("userName", userName);
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(userInfo);
+
+            String nickname = rootNode.path("properties").path("nickname").asText();
+            String thumbnailImageUrl = rootNode.path("properties").path("thumbnail_image").asText();
+
+            System.out.println("nickname : " + nickname);
+            System.out.println("thumbnailImageUrl : " + thumbnailImageUrl);
+
+            model.addAttribute("userId", nickname);
+            model.addAttribute("thumbnailImageUrl", thumbnailImageUrl);
+
 
             return "loginSuccess"; // 로그인 성공 페이지로 리디렉션
         } catch (Exception e) {
@@ -76,16 +89,19 @@ public class KakaoLoginController {
 
     private String getAccessToken(String code) {
         RestTemplate restTemplate = new RestTemplate();
+        restTemplate.getMessageConverters().add(new FormHttpMessageConverter());
+        restTemplate.getMessageConverters().add(new StringHttpMessageConverter(StandardCharsets.UTF_8));
+
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-Type", "application/x-www-form-urlencoded");
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        Map<String, String> params = new HashMap<>();
-        params.put("grant_type", "authorization_code");
-        params.put("client_id", clientId);
-        params.put("redirect_uri", redirectUri);
-        params.put("code", code);
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("grant_type", "authorization_code");
+        params.add("client_id", clientId);
+        params.add("redirect_uri", redirectUri);
+        params.add("code", code);
 
-        HttpEntity<Map<String, String>> request = new HttpEntity<>(params, headers);
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
         ResponseEntity<String> response = restTemplate.exchange(tokenUri, HttpMethod.POST, request, String.class);
 
         // JSON 파싱하여 access_token 추출 (간단한 예시, 실제로는 JSON 파싱 필요)

@@ -1,6 +1,8 @@
 package com.young.in.youngk.board;
 
 
+import com.young.in.youngk.board.entity.Board;
+import com.young.in.youngk.board.request.entity.BoardRequest;
 import com.young.in.youngk.commnet.Comment;
 import com.young.in.youngk.commnet.CommentRepository;
 import com.young.in.youngk.user.AppUsers;
@@ -10,6 +12,7 @@ import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +24,9 @@ public class BoardService{
 
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
-
     private final AppUsersRepository appUsersRepository;
 
+    @Transactional(readOnly = true)
     public Optional<Board> getPostWithComments(String postId) {
         try {
             ObjectId objectId = new ObjectId(postId);
@@ -43,5 +46,12 @@ public class BoardService{
             return Optional.empty();
         }
     }
+
+    public Board save(BoardRequest request){
+        var saveData = BoardRequest.toSave(request);
+        return boardRepository.save(saveData);
+    }
+
+
 
 }
